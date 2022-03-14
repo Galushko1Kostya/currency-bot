@@ -30,7 +30,7 @@ def currency_rate_21(update, context):
                                       f'{currency_code}&date=20210314&json').json()
         rate = currency_rate[0]['rate']
         global value_old
-        value_old = f'{currency_code} rate: {rate} UAH'
+        value_old = rate
     context.bot.send_message(chat_id=chat.id, text=value_old)
 
 def sum(update, context):
