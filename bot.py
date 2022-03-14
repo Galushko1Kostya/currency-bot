@@ -12,34 +12,37 @@ def welcome(update, context):
                              reply_markup=ReplyKeyboardMarkup(buttons))
 
 def currency_rate_22(update, context):
-    global message
     chat = update.effective_chat
     currency_code = update.message.text
     if currency_code in ('USD', 'EUR', 'PLN', 'GEL', 'CAD', 'MXN', 'MDL', 'ILS', 'NOK', 'IDR'):
-        currency_rate1 = requests.get(f'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?valcode='
+        currency_rate = requests.get(f'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?valcode='
                                       f'{currency_code}&date=20220314&json').json()
-        rate = currency_rate1[0]['rate']
-        message = f'{currency_code} rate: {rate} UAH'
-    context.bot.send_message(chat_id=chat.id, text=message)
+        rate = currency_rate[0]['rate']
+        global value_new
+        value_new = f'{currency_code} rate: {rate} UAH'
+    context.bot.send_message(chat_id=chat.id, text=value_new)
 
 def currency_rate_21(update, context):
-    global message
     chat = update.effective_chat
     currency_code = update.message.text
     if currency_code in ('USD', 'EUR', 'PLN', 'GEL', 'CAD', 'MXN', 'MDL', 'ILS', 'NOK', 'IDR'):
-        currency_rate2 = requests.get(f'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?valcode='
+        currency_rate = requests.get(f'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?valcode='
                                       f'{currency_code}&date=20210314&json').json()
-        rate = currency_rate2[0]['rate']
-        message = f'{currency_code} rate: {rate} UAH'
-    context.bot.send_message(chat_id=chat.id, text=message)
- 
-    currency_rate_sum = currency_rate_22 - currency_rate_21
-    message1 = f'{currency_rate_sum}'
-    context.bot.send_message(chat_id=chat.id, text=message1)
+        rate = currency_rate[0]['rate']
+        global value_old
+        value_old = f'{currency_code} rate: {rate} UAH'
+    context.bot.send_message(chat_id=chat.id, text=value_old)
+
+def sum(update, context):
+    chat = update.effective_chat
+    message_sum = value_new - value_old
+    context.bot.send_message(chat_id=chat.id, text=message_sum)
 
 disp = updater.dispatcher
 disp.add_handler(CommandHandler('start', welcome))
-disp.add_handler(MessageHandler(Filters.all, currency_rate_21))
+disp.add_handler(CommandHandler('courseone', currency_rate_22))
+disp.add_handler(CommandHandler('coursetwo', currency_rate_21))
+disp.add_handler(MessageHandler(Filters.all, sum))
 
 updater.start_polling()
 updater.idle()
