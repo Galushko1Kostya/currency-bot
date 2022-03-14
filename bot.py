@@ -30,7 +30,7 @@ def currency_rate_21(update, context):
                                       f'{currency_code}&date=20210314&json').json()
         rate = currency_rate[0]['rate']
         global value_old
-        value_old = rate
+        value_old = f'{currency_code} rate: {rate} UAH'
     context.bot.send_message(chat_id=chat.id, text=value_old)
 
 def sum(update, context):
@@ -40,8 +40,8 @@ def sum(update, context):
 
 disp = updater.dispatcher
 disp.add_handler(CommandHandler('start', welcome))
-disp.add_handler(CommandHandler('courseone', currency_rate_22))
-disp.add_handler(CommandHandler('coursetwo', currency_rate_21))
+disp.add_handler(CommandHandler('currency_rate_new', currency_rate_22))
+disp.add_handler(CommandHandler('currency_rate_old', currency_rate_21))
 disp.add_handler(MessageHandler(Filters.all, sum))
 
 updater.start_polling()
